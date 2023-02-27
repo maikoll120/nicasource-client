@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import { videoService } from '../../lib/services'
+import { FieldWrapper } from './Published.style'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 
 interface Props {
   videoId: number
@@ -29,11 +33,11 @@ const Published = ({ videoId }: Props) => {
   }
 
   return (
-    <div>
-      <h3>Published</h3>
-      <button type='button' onClick={handlePublish}>{publish ? 'Unpublish' : 'Publish'}</button>
-    </div>
-
+    <FieldWrapper>
+      <FormGroup>
+        <FormControlLabel control={<Switch checked={publish} onChange={handlePublish} />} label='Published' />
+      </FormGroup>
+    </FieldWrapper>
   )
 }
 

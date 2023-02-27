@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { videoService } from '../../lib/services'
 import { type ILike } from '../../lib/models/like.interface'
+import { FieldWrapper, FieldTitle } from './Like.style'
+import Button from '@mui/material/Button'
 
 interface Props {
   videoId: number
@@ -32,12 +34,11 @@ const Like = ({ videoId }: Props) => {
   }
 
   return (
-    <div>
-      <h3>Likes: {likes.countLikes}</h3>
+    <FieldWrapper>
+      <FieldTitle>Likes: {likes.countLikes}</FieldTitle>
 
-      <button type='button' onClick={handleLiked}>{likes.isLiked ? 'Dislike' : 'Like'}</button>
-    </div>
-
+      <Button type='button' size='small' variant='contained' color={likes.isLiked ? 'error' : 'success'} onClick={handleLiked}>{likes.isLiked ? 'Dislike' : 'Like'}</Button>
+    </FieldWrapper>
   )
 }
 

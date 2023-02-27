@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { userService } from '../../lib/services'
 import { type IFollow } from '../../lib/models/follow.interface'
+import { FieldWrapper, FieldTitle } from './Follow.style'
+import Button from '@mui/material/Button'
 
 interface Props {
   userId: number
@@ -32,12 +34,11 @@ const Follow = ({ userId }: Props) => {
   }
 
   return (
-    <div>
-      <h3>Followers: {followers.countFollowers}</h3>
+    <FieldWrapper>
+      <FieldTitle>Followers: {followers.countFollowers}</FieldTitle>
 
-      <button type='button' onClick={handleFollowed}>{followers.isFollowed ? 'Unfollow' : 'Follow'}</button>
-    </div>
-
+      <Button type='button' size='small' variant='contained' color={followers.isFollowed ? 'error' : 'success'} onClick={handleFollowed}>{followers.isFollowed ? 'Unfollow' : 'Follow'}</Button>
+    </FieldWrapper>
   )
 }
 

@@ -10,7 +10,7 @@ const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!userService.getCurrentUser()) { navigate('/login') }
+    if (!userService.getCurrentUser()) { navigate('/user/login') }
   }, [])
 
   return <>{children}</>

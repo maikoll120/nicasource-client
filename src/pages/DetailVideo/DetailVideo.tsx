@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { videoService } from '../../lib/services'
 import { type IVideo } from '../../lib/models/video.interface'
 import { getDate } from '../../lib/util'
-import { Like } from '../../components'
+import { Like, Alert } from '../../components'
+import { Container, Main, FieldWrapper, FieldTitle, FieldImg } from './DetailVideo.style'
 
 const DetailVideo = () => {
   const { id } = useParams()
   const videoId = id ? parseInt(id) : -1
   const [video, setVideo] = useState<IVideo>({})
+  const [alert, setAlert] = useState(null)
 
   useEffect(() => {
     async function fetchData () {
       try {
         setVideo(await videoService.getSummary(videoId))
-      } catch (error) {
-        console.log(error)
+      } catch (error: any) {
+        setAlert(error?.message)
       }
     }
 
@@ -23,14 +25,40 @@ const DetailVideo = () => {
   }, [])
 
   return (
-    <>
-      <div>{video.title}</div>
-      <div>{video.description}</div>
-      <div>{video.url}</div>
-      <div>{getDate(video.createdAt)}</div>
-      <div>{video.user?.name}</div>
-      <Like videoId={videoId} />
-    </>
+    <Container>
+      {alert && <Alert message={alert} severity='error' />}
+
+      <Main>
+        <h1>{video.title}</h1>
+
+        <Like videoId={videoId} />
+
+        <FieldWrapper>
+          <FieldImg src={require('../../assets/video.png')} />
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldTitle>Description:</FieldTitle>
+          <div>{video.description}</div>
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldTitle>Url:</FieldTitle>
+          <div>{video.url}</div>
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldTitle>Created at:</FieldTitle>
+          <div>{getDate(video.createdAt)}</div>
+        </FieldWrapper>
+
+        <FieldWrapper>
+          <FieldTitle>Created by:</FieldTitle>
+          <Link to={`/creators/${video.user?.id ?? -1}/detail`}>{video.user?.name}</Link>
+        </FieldWrapper>
+
+      </Main>
+    </Container>
 
   )
 }

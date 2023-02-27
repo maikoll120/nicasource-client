@@ -5,7 +5,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { videoService } from '../../lib/services'
 import { type IVideo } from '../../lib/models/video.interface'
-import { Published } from '../../components'
+import { Published, Alert } from '../../components'
+import { Container, Main, ButtonContainer } from './CreateVideo.style'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
 
 const schema = yup.object({
   title: yup.string().required(),
@@ -25,6 +29,7 @@ const CreateVideo = ({ editMode = false }: Props) => {
   const videoId = id ? parseInt(id) : -1
   const [video, setVideo] = useState<IVideo>({})
   const label = editMode ? 'Update' : 'Create'
+  const [alert, setAlert] = useState(null)
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: yupResolver(schema)
@@ -42,7 +47,7 @@ const CreateVideo = ({ editMode = false }: Props) => {
 
       navigate('/')
     } catch (error: any) {
-      console.log(error?.message)
+      setAlert(error?.message)
     }
   }
 
@@ -50,8 +55,8 @@ const CreateVideo = ({ editMode = false }: Props) => {
     async function fetchData () {
       try {
         if (id) { setVideo(await videoService.getVideo(videoId)) }
-      } catch (error) {
-        console.log(error)
+      } catch (error: any) {
+        setAlert(error?.message)
       }
     }
 
@@ -63,24 +68,54 @@ const CreateVideo = ({ editMode = false }: Props) => {
   }, [video])
 
   return (
-    <div>
-      <h1>{label} Video</h1>
+    <Container>
+      <Main>
+        {alert && <Alert message={alert} severity='error' />}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input {...register('title')} />
-        <p>{errors.title?.message}</p>
+        <h1>{label} Video</h1>
 
-        <input {...register('description')} />
-        <p>{errors.description?.message}</p>
+        <Paper elevation={3} sx={{ padding: '1rem' }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              {...register('title')}
+              error={!!errors.title?.message}
+              id='outlined-error-helper-text'
+              placeholder='Title'
+              helperText={errors.title?.message}
+              fullWidth
+              margin='dense'
+            />
 
-        <input {...register('url')} />
-        <p>{errors.url?.message}</p>
+            <TextField
+              {...register('description')}
+              error={!!errors.description?.message}
+              id='outlined-error-helper-text'
+              placeholder='Description'
+              helperText={errors.description?.message}
+              fullWidth
+              margin='dense'
+            />
 
-        {editMode && id && <Published videoId={videoId} />}
+            <TextField
+              {...register('url')}
+              error={!!errors.url?.message}
+              id='outlined-error-helper-text'
+              placeholder='Url'
+              helperText={errors.url?.message}
+              fullWidth
+              margin='dense'
+            />
 
-        <button type='submit'>{label}</button>
-      </form>
-    </div>
+            {editMode && id && <Published videoId={videoId} />}
+
+            <ButtonContainer>
+              <Button type='submit' variant='contained' fullWidth>{label}</Button>
+              <Button type='button' variant='outlined' fullWidth onClick={() => { navigate('/') }}>Cancel</Button>
+            </ButtonContainer>
+          </form>
+        </Paper>
+      </Main>
+    </Container>
   )
 }
 

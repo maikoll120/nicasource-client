@@ -5,11 +5,12 @@ import { type ILike } from '../models/like.interface'
 import { authHeader } from './authHeader'
 import { handleError } from './handleError'
 
-export const getAll = async (owned: boolean = false, liked: boolean = false) => {
+export const getAll = async (owned: boolean = false, liked: boolean = false, userId?: number) => {
   try {
     const isOwned = owned ? 'owned=true' : ''
     const isLiked = liked ? 'liked=true' : ''
-    const queryParams = [isOwned, isLiked]
+    const isUserId = userId ? `userid=${userId}` : ''
+    const queryParams = [isOwned, isLiked, isUserId]
 
     const response = await axios.get(`${API_URL}/videos?${queryParams.join('&')}`, { headers: authHeader() })
     const videos: IVideo[] = response.data

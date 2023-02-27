@@ -51,9 +51,10 @@ export const logout = () => {
   store.remove(STORAGE_USER)
 }
 
-export const getAll = async () => {
+export const getAll = async (followed: boolean = false) => {
   try {
-    const response = await axios.get(`${API_URL}/users`, { headers: authHeader() })
+    const isFollowed = followed ? 'followed=true' : ''
+    const response = await axios.get(`${API_URL}/users?${isFollowed}`, { headers: authHeader() })
     const users: IUser[] = response.data
 
     return users
@@ -77,7 +78,7 @@ export const getFollowers = async (id: number) => {
   try {
     const response = await axios.get(`${API_URL}/users/${id}/followers`, { headers: authHeader() })
     const followers: IFollow = response.data
-    console.log(followers)
+
     return followers
   } catch (error) {
     return handleError(error)
