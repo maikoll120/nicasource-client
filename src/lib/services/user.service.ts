@@ -3,7 +3,9 @@ import store from 'store2'
 import { BehaviorSubject } from 'rxjs'
 import { API_URL, STORAGE_USER } from '../config'
 import { type IUser } from '../models/user.interface'
+import { type IFollow } from '../models/follow.interface'
 import { authHeader } from './authHeader'
+import { handleError } from './handleError'
 
 const currentUser = store(STORAGE_USER)
 const userSubject = new BehaviorSubject(currentUser)
@@ -56,18 +58,48 @@ export const getAll = async () => {
 
     return users
   } catch (error) {
-    throw new Error('Error on getAll')
+    return handleError(error)
   }
 }
 
-const handleError = (error: any) => {
-  if (error?.response) {
-    if (error.response.status === 401) {
-      logout()
-    }
+export const getProfile = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/users/${id}/profile`, { headers: authHeader() })
+    const user: IUser = response.data
 
-    throw new Error(error?.response?.data?.message)
-  } else {
-    throw new Error(error?.message)
+    return user
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export const getFollowers = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/users/${id}/followers`, { headers: authHeader() })
+    const followers: IFollow = response.data
+    console.log(followers)
+    return followers
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export const follow = async (id: number) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/${id}/follow`, {}, { headers: authHeader() })
+
+    return response.data.follow
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export const unfollow = async (id: number) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/${id}/unfollow`, {}, { headers: authHeader() })
+
+    return response.data.follow
+  } catch (error) {
+    return handleError(error)
   }
 }
